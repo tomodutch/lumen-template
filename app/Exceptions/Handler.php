@@ -11,6 +11,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -49,12 +50,19 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         switch (true) {
+            case $e instanceof NotFoundHttpException:
+                return new GenericResource(new Generic([
+                    'http' => Response::HTTP_NOT_FOUND,
+                    'message' => 'Requested route is not implemented',
+                    'code' => 5
+                ]));
+                break;
             case $e instanceof ValidationException:
                 return new GenericResource(new Generic([
                     'http' => Response::HTTP_BAD_REQUEST,
                     'message' => 'Invalid input received. Please look at the errors object for more information',
                     'errors' => $e->errors(),
-                    'code' => 5
+                    'code' => 4
                 ]));
                 break;
             case $e instanceof ModelNotFoundException:
