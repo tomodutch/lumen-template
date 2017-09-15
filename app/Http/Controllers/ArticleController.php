@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Article;
 use App\Resources\ArticleCollection as ArticleCollectionResource;
 use App\Resources\Article as ArticleResource;
+use App\Rules\ValidUUID;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -78,7 +79,8 @@ class ArticleController extends Controller
     private function validateRequest(Request $request)
     {
         return $this->validate($request, [
-                'title' => 'required|string'
+                'title' => ['required', 'string'],
+                'someId' => ['sometimes', new ValidUUID()]
             ]
         );
     }
