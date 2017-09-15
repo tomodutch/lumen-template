@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Article;
 use App\Resources\ArticleCollection as ArticleCollectionResource;
 use App\Resources\Article as ArticleResource;
-use App\Rules\ValidUUID;
 use Illuminate\Http\Request;
+use App\Requests\StoreArticle as StoreArticleRequest;
 use Illuminate\Http\Response;
 
 class ArticleController extends Controller
@@ -40,11 +40,10 @@ class ArticleController extends Controller
         return new ArticleResource($article);
     }
 
-    public function create(Request $request)
+    public function create(StoreArticleRequest $request)
     {
-        $attributes = $this->validateRequest($request);
-
-        $article = new Article($attributes);
+        /** @var Article $article */
+        $article = tap(new Article)->fill($request->validate());
         $article->saveOrFail();
 
         return (new ArticleResource($article))
@@ -52,9 +51,9 @@ class ArticleController extends Controller
             ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    public function update(Request $request, $id)
+    public function update(StoreArticleRequest $request, $id)
     {
-        $attributes = $this->validateRequest($request);
+        $attributes = $request->validate();
 
         $article = Article::where('id', $id)->firstOrFail();
         $article->fill($attributes)->saveOrFail();
@@ -70,18 +69,5 @@ class ArticleController extends Controller
         }
 
         return response('', Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * @param Request $request
-     * @return array
-     */
-    private function validateRequest(Request $request)
-    {
-        return $this->validate($request, [
-                'title' => ['required', 'string'],
-                'someId' => ['sometimes', new ValidUUID()]
-            ]
-        );
     }
 }

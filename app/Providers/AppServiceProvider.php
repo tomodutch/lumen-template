@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Resources\ArticleCollection;
+use App\Requests\StoreArticle;
 use App\Resources\Generic;
 use Illuminate\Http\Resources\Json\Resource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -30,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(StoreArticle::class, function () {
+            return StoreArticle::capture();
+        });
     }
 }
