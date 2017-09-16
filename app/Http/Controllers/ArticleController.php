@@ -40,10 +40,12 @@ class ArticleController extends Controller
         return new ArticleResource($article);
     }
 
-    public function create(StoreArticleRequest $request)
+    public function create(Request $request)
     {
+        $attributes = $this->validate($request, $this->rules());
+
         /** @var Article $article */
-        $article = tap(new Article)->fill($request->validate());
+        $article = tap(new Article)->fill($attributes);
         $article->saveOrFail();
 
         return (new ArticleResource($article))
@@ -69,5 +71,15 @@ class ArticleController extends Controller
         }
 
         return response('', Response::HTTP_NO_CONTENT);
+    }
+
+    public function rules()
+    {
+        return [
+            'title' => [
+                'required'
+            ]
+        ];
+
     }
 }
