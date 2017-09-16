@@ -28,6 +28,10 @@ class Create{{ucfirst($plural)}} extends Migration
                 @endforeach
                 ]);
             @endif
+
+            @if ($implementSoftDeletes)
+                $table->softDeletes();
+            @endif
         });
     }
 

@@ -32,12 +32,20 @@ class CMakeResource extends Command
     /** @var Collection */
     private $primaryIdDataTypes = [];
 
+    /** @var bool $implementSoftDeletes */
+    private $implementSoftDeletes = false;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'cmake:resource {name} {plural} {fields*}';
+    protected $signature = 'cmake:resource
+        {name : The name of the resource}
+        {plural : The plural name of the resource}
+        {fields* : The fields that the resource should have}
+        {--softDeletes : Implement soft deletes for the resource}
+    ';
 
     /**
      * The console command description.
@@ -61,6 +69,8 @@ class CMakeResource extends Command
      */
     public function handle()
     {
+        $this->implementSoftDeletes = $this->option('softDeletes');
+
         $name = $this->argument('name');
         $this->camelCase = camel_case($name);
         $this->pascalCase = ucfirst($this->camelCase);
@@ -151,7 +161,8 @@ class CMakeResource extends Command
             'camelCase' => $this->camelCase,
             'plural' => $this->plural,
             'dataTypes' => $this->dataTypes,
-            'primaryIdDataTypes' => $this->primaryIdDataTypes
+            'primaryIdDataTypes' => $this->primaryIdDataTypes,
+            'implementSoftDeletes' => $this->implementSoftDeletes
         ];
     }
 

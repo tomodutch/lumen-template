@@ -32,28 +32,28 @@ class ThomasController extends Controller
         $skip = $request->get('skip', 0);
 
         /**
-        * Naive implementation of pagination
-        * You might run into performance issues when the skip is high
-        * For a solution see (https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
-        */
+         * Naive implementation of pagination
+         * You might run into performance issues when the skip is high
+         * For a solution see (https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
+         */
         $query = Thomas::query();
         $total = $query->count();
         $thomass = $query->skip($skip)->take($take)->get();
 
         return (new ThomasCollectionResource($thomass))
-        ->response()
-        ->header('X-PAGINATION-TOTAL', $total)
-        ->header('X-PAGINATION-SKIP', $skip)
-        ->header('X-PAGINATION-TAKE', $take)
-        ->header('X-PAGINATION-SUPPORT', true);
+            ->response()
+            ->header('X-PAGINATION-TOTAL', $total)
+            ->header('X-PAGINATION-SKIP', $skip)
+            ->header('X-PAGINATION-TAKE', $take)
+            ->header('X-PAGINATION-SUPPORT', true);
     }
 
     /**
-    * Display the specified resource.
-    *
-    * @param    mixed  $id
-    * @return  \Illuminate\Http\Response
-    */
+     * Display the specified resource.
+     *
+     * @param    mixed $id
+     * @return  \Illuminate\Http\Response
+     */
     public function show($id)
     {
         $thomas = Thomas::where('id', $id)->firstOrFail();
@@ -114,20 +114,21 @@ class ThomasController extends Controller
         return response('', Response::HTTP_NO_CONTENT);
     }
 
-    public function rules() {
+    public function rules()
+    {
         return [
-                                                                                        'title' => [
-                                                                                    'nullable',
-                                                                                                                'string',
-                                                                        ],
-                                                                'dateOfBirth' => [
-                                                                                    'required',
-                                                                                                                'date',
-                                                                        ],
-                                                                'age' => [
-                                                                                    'required',
-                                                                                                                'numeric',
-                                                                        ],
-                                    ];
+            'title' => [
+                'nullable',
+                'string',
+            ],
+            'dateOfBirth' => [
+                'required',
+                'date',
+            ],
+            'age' => [
+                'required',
+                'numeric',
+            ],
+        ];
     }
 }

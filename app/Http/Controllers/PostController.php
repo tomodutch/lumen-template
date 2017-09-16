@@ -69,7 +69,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $attributes = $this->validate($request, $this->rules());
+        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
 
         /** @var  Post $post */
         $post = tap(new Post)->fill($attributes);
@@ -89,7 +89,7 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $attributes = $this->validate($request, $this->rules());
+        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
 
         /** @var  Post $post */
         $post = Post::where('id', $id)->firstOrFail();
@@ -120,6 +120,14 @@ class PostController extends Controller
             'title' => [
                 'required',
                 'string',
+            ],
+            'body' => [
+                'required',
+                'string',
+            ],
+            'isFeatured' => [
+                'nullable',
+                'boolean',
             ],
         ];
     }

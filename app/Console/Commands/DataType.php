@@ -123,6 +123,10 @@ class DataType
             $additionalRules[] = 'date';
         }
 
+        if ($this->type === 'boolean') {
+            $additionalRules[] = 'boolean';
+        }
+
         return array_merge($standardRules, $additionalRules);
     }
 

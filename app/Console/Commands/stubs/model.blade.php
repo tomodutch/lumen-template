@@ -2,10 +2,17 @@ namespace App;
 
 
 use Illuminate\Database\Eloquent\Model;
+@if ($implementSoftDeletes)
+use Illuminate\Database\Eloquent\SoftDeletes;
+@endif
 
 class {{$pascalCase}} extends Model
 {
     public $table = '{{$plural}}';
+
+    @if ($implementSoftDeletes)
+        use SoftDeletes;
+    @endif
 
     protected $fillable = [
         @php
@@ -19,6 +26,10 @@ class {{$pascalCase}} extends Model
     ];
 
     protected $dates = [
+        @if ($implementSoftDeletes)
+            'deleted_at',
+        @endif
+
         @foreach ($dataTypes as $dataType)
             @if ($dataType->isDate())
                 '{{$dataType->getName()}}',

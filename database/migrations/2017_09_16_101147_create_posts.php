@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateThomass extends Migration
+class CreatePosts extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,19 @@ class CreateThomass extends Migration
      */
     public function up()
     {
-        Schema::create('thomass', function(Blueprint $table) {
+        Schema::create('posts', function(Blueprint $table) {
                                         $table->uuid('id') ;
-                            $table->string('title') ->nullable() ;
+                            $table->string('title') ;
+                            $table->text('body') ;
+                            $table->boolean('is_featured') ->nullable() ;
             
             $table->timestampsTz();
 
                             $table->primary([
                                     'id',
                                 ]);
+            
+                            $table->softDeletes();
                     });
     }
 
@@ -32,6 +36,6 @@ class CreateThomass extends Migration
      */
     public function down()
     {
-        Schema::drop('thomass');
+        Schema::drop('posts');
     }
 }
