@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 @endif
 @if ($useUuidAsPrimaryKey)
-use App\Traits\Uuids;
+use Ramsey\Uuid\Uuid;
 @endif
 
 class {{$pascalCase}} extends Model
@@ -18,7 +18,6 @@ class {{$pascalCase}} extends Model
     @endif
 
     @if ($useUuidAsPrimaryKey)
-        use Uuids;
         public $incrementing = false;
     @endif
 
@@ -44,4 +43,22 @@ class {{$pascalCase}} extends Model
             @endif
         @endforeach
     ];
+    @if ($useUuidAsPrimaryKey)
+    /**
+    * Boot function from laravel.
+    */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            @if (class_exists('Ramsey\Uuid\Uuid'))
+                $model->{$model->getKeyName()} = Uuid::uuid4()->toString();
+            @else
+                // $model->{$model->getKeyName()} = Uuid::uuid4()->toString();
+                throw new \Exception('Generate a UUID when saving this model');
+            @endif
+        });
+    }
+    @endif
 }
