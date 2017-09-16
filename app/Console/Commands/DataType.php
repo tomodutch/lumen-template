@@ -98,15 +98,7 @@ class DataType
             $additionalRules[] = 'numeric';
         }
 
-        if (in_array($this->type, [
-            'date',
-            'dateTime',
-            'dateTimeTz',
-            'time',
-            'timeTz',
-            'timestamp',
-            'timestampTz',
-        ])) {
+        if ($this->isDate()) {
             $additionalRules[] = 'date';
         }
 
@@ -125,6 +117,19 @@ class DataType
             'increments',
             'mediumIncrements',
             'smallIncrements',
+        ]);
+    }
+
+    public function isDate()
+    {
+        return in_array($this->type, [
+            'date',
+            'dateTime',
+            'dateTimeTz',
+            'time',
+            'timeTz',
+            'timestamp',
+            'timestampTz',
         ]);
     }
 

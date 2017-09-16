@@ -17,4 +17,12 @@ class {{$pascalCase}} extends Model
             @endunless
         @endforeach
     ];
+
+    protected $dates = [
+        @foreach ($dataTypes as $dataType)
+            @if ($dataType->isDate())
+                '{{$dataType->getName()}}',
+            @endif
+        @endforeach
+    ];
 }
