@@ -12,8 +12,8 @@ class Thomas extends Resource
         return [
                                                             'id' => $this->id,
                                                                 'title' => $this->title,
-                                                                'age' => $this->age,
                                                                 'dateOfBirth' => $this->date_of_birth->toISO8601String(),
+                                                                'age' => $this->age,
                                         'createdAt' => $this->when($this->created_at, $this->created_at->toISO8601String(), null),
             'updatedAt' => $this->when($this->updated_at, $this->updated_at->toISO8601String(), null)
         ];

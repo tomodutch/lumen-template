@@ -18,18 +18,28 @@ class DataType
      */
     private $type;
 
+    private $isPrimary = false;
+
+    private $isNullable = true;
+
     /**
      * DataType constructor.
      * @param string $name
      * @param string $type
      */
-    public function __construct($name, $type)
+    public function __construct($name, $type, $isPrimary, $isNullable)
     {
         $this->name = $name;
         $this->type = $type;
+        $this->isPrimary = $isPrimary;
+        $this->isNullable = $isNullable;
 
-        if ($this->isValidType($type) === false) {
+        if ($this->isValidType() === false) {
             throw new \InvalidArgumentException("Type \"$type\" is not recognized");
+        }
+
+        if ($isPrimary && $isNullable) {
+            throw new \InvalidArgumentException("Primary key should not be nullable for type \"$name\"");
         }
     }
 
@@ -43,7 +53,7 @@ class DataType
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -51,14 +61,25 @@ class DataType
     /**
      * @return string
      */
-    public function getType(): string
+    public function getType()
     {
         return $this->type;
     }
 
+    public function isNullable()
+    {
+        return $this->isNullable;
+    }
+
     public function getRules()
     {
-        $standardRules = ['required'];
+        $standardRules = [];
+        if ($this->isNullable()) {
+            $standardRules[] = 'nullable';
+        } else {
+            $standardRules[] = 'required';
+        }
+
         $additionalRules = [];
 
         if ($this->type === 'uuid') {
@@ -107,7 +128,7 @@ class DataType
 
     public function isPrimaryKey()
     {
-        return $this->isIncrements();
+        return $this->isPrimary || $this->isIncrements();
     }
 
     public function isIncrements()
@@ -142,7 +163,23 @@ class DataType
         }
 
         list($name, $type) = $pieces;
+        $options = array_slice($pieces, 2);
 
-        return new DataType($name, $type);
+        $isPrimary = false;
+        $isNullable = false;
+        foreach ($options as $option) {
+            switch (true) {
+                case $option === 'primary':
+                    $isPrimary = true;
+                    break;
+                case $option === 'nullable':
+                    $isNullable = true;
+                    break;
+                default:
+                    throw new \InvalidArgumentException("Unrecognized option \"$option\" for type \"$name\"");
+            }
+        }
+
+        return new DataType($name, $type, $isPrimary, $isNullable);
     }
 }

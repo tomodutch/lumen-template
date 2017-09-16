@@ -10,12 +10,12 @@ class Thomas extends Model
     public $table = 'thomass';
 
     protected $fillable = [
-        'title',
-        'age',
-        'date_of_birth',
-    ];
+                                                                'title',
+                                                'date_of_birth',
+                                                'age',
+                        ];
 
     protected $dates = [
-        'date_of_birth',
-    ];
+                                                                            'date_of_birth',
+                                            ];
 }

@@ -14,10 +14,10 @@ class CreateThomass extends Migration
     public function up()
     {
         Schema::create('thomass', function(Blueprint $table) {
-                                        $table->increments('id');
-                            $table->string('title');
-                            $table->integer('age');
-                            $table->timestampTz('date_of_birth');
+                                        $table->increments('id') ;
+                            $table->string('title') ->nullable() ;
+                            $table->timestampTz('date_of_birth') ;
+                            $table->integer('age') ;
             
             $table->timestampsTz();
 

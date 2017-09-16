@@ -16,7 +16,7 @@ class Create{{ucfirst($plural)}} extends Migration
                 /** @var \App\Console\Commands\DataType $dataType */
             @endphp
             @foreach ($dataTypes as $dataType)
-                $table->{{$dataType->getType()}}('{{$dataType->getName()}}');
+                $table->{{$dataType->getType()}}('{{$dataType->getName()}}') @if($dataType->isNullable())->nullable() @endif;
             @endforeach
 
             $table->timestampsTz();

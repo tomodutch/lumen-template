@@ -117,16 +117,16 @@ class ThomasController extends Controller
     public function rules() {
         return [
                                                                                         'title' => [
-                                                                                    'required',
+                                                                                    'nullable',
                                                                                                                 'string',
-                                                                        ],
-                                                                'age' => [
-                                                                                    'required',
-                                                                                                                'numeric',
                                                                         ],
                                                                 'dateOfBirth' => [
                                                                                     'required',
                                                                                                                 'date',
+                                                                        ],
+                                                                'age' => [
+                                                                                    'required',
+                                                                                                                'numeric',
                                                                         ],
                                     ];
     }
