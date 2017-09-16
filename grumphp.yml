@@ -3,6 +3,7 @@ parameters:
     bin_dir: vendor/bin
     tasks:
       phpunit: ~
+      securitychecker: ~
       phpmd:
         ruleset: ['./ruleset.xml']
         triggered_by: ['php']
