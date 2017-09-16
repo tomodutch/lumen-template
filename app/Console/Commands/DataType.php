@@ -115,6 +115,11 @@ class DataType
 
     public function isPrimaryKey()
     {
+        return $this->isIncrements();
+    }
+
+    public function isIncrements()
+    {
         return in_array($this->type, [
             'bigIncrements',
             'increments',

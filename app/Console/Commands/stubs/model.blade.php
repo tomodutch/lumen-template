@@ -12,7 +12,7 @@ class {{$pascalCase}} extends Model
             /** @var \App\Console\Commands\DataType $dataType */
         @endphp
         @foreach ($dataTypes as $dataType)
-            @unless (in_array($dataType, $primaryIdDataTypes))
+            @unless (in_array($dataType, $primaryIdDataTypes->toArray()))
                 '{{$dataType->getName()}}',
             @endunless
         @endforeach

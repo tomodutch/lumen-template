@@ -117,6 +117,11 @@ class ThomasController extends Controller
     public function rules()
     {
         return [
+            'id' => [
+                'required',
+                'string',
+                new \App\Rules\ValidUUID(),
+            ],
             'title' => [
                 'required',
                 'string',

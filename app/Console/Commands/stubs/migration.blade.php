@@ -21,11 +21,13 @@ class Create{{ucfirst($plural)}} extends Migration
 
             $table->timestampsTz();
 
-            $table->primary([
+            @if ($shouldRenderPrimaryKeys)
+                $table->primary([
                 @foreach ($primaryIdDataTypes as $dataType)
                     '{{$dataType->getName()}}',
                 @endforeach
-            ]);
+                ]);
+            @endif
         });
     }
 

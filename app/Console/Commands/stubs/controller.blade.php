@@ -118,7 +118,7 @@ class {{$pascalCase}}Controller extends Controller
                 /** @var \App\Console\Commands\DataType $dataType */
             @endphp
             @foreach ($dataTypes as $dataType)
-                @unless (in_array($dataType, $primaryIdDataTypes))
+                @unless (in_array($dataType, $primaryIdDataTypes->toArray()))
                     '{{$dataType->getName()}}' => [
                         @foreach ($dataType->getRules() as $rule)
                             @if (class_exists($rule))

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Composer;
 use Illuminate\View\Factory;
 
@@ -25,10 +26,10 @@ class CMakeResource extends Command
     /** @var string */
     private $plural = '';
 
-    /** @var array */
+    /** @var Collection */
     private $dataTypes = [];
 
-    /** @var array */
+    /** @var Collection */
     private $primaryIdDataTypes = [];
 
     /**
@@ -73,7 +74,7 @@ class CMakeResource extends Command
 
         $this->primaryIdDataTypes = $this->dataTypes->filter(function (DataType $dataType) {
             return $dataType->isPrimaryKey();
-        })->toArray();
+        });
 
         $this->createMigration();
         $this->createModel();
@@ -91,6 +92,11 @@ class CMakeResource extends Command
         $fileName = $now->format('Y_m_d_His') . '_' . "create_{$this->plural}.php";
 
         $viewParams = $this->getViewParams();
+        $viewParams['shouldRenderPrimaryKeys'] =
+            $this->primaryIdDataTypes->first(function (DataType $dataType) {
+                return $dataType->isIncrements();
+            }) === null;
+
         $contents = $this->view->make('migration', $viewParams)->render();
         $dest = base_path(implode(DIRECTORY_SEPARATOR,
             ['database', 'migrations', $fileName]));

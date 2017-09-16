@@ -13,14 +13,17 @@ class CreateThomass extends Migration
      */
     public function up()
     {
-        Schema::create('thomas', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('title');
-            $table->integer('age');
-            $table->timestampTz('date_of_birth');
-
+        Schema::create('thomass', function(Blueprint $table) {
+                                        $table->uuid('id');
+                            $table->string('title');
+                            $table->integer('age');
+                            $table->timestampTz('date_of_birth');
+            
             $table->timestampsTz();
-        });
+
+                            $table->primary([
+                                ]);
+                    });
     }
 
     /**
