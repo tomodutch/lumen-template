@@ -6,7 +6,7 @@ use App\Resources\Post as PostResource;
 use App\Resources\PostCollection as PostResourceCollection;
 use App\Post;
 
-class ExampleTest extends TestCase
+class PostTest extends TestCase
 {
     use DatabaseMigrations;
     use DatabaseTransactions;

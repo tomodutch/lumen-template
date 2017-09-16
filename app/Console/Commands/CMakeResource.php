@@ -96,6 +96,7 @@ class CMakeResource extends Command
 
         $this->createMigration();
         $this->createFactory();
+        $this->createTest();
         $this->createModel();
         $this->createViewResource();
         $this->createCollectionViewResource();
@@ -130,6 +131,17 @@ class CMakeResource extends Command
         $contents = $this->view->make('factory', $viewParams)->render();
         $dest = base_path(implode(DIRECTORY_SEPARATOR,
             ['database', 'factories', $fileName]));
+
+        $this->writeFile($dest, '<?php' . PHP_EOL . PHP_EOL . $contents);
+    }
+
+    public function createTest()
+    {
+        $viewParams = $this->getViewParams();
+        $fileName = $this->pascalCase . 'Test.php';
+        $contents = $this->view->make('test', $viewParams)->render();
+        $dest = base_path(implode(DIRECTORY_SEPARATOR,
+            ['tests', $fileName]));
 
         $this->writeFile($dest, '<?php' . PHP_EOL . PHP_EOL . $contents);
     }
