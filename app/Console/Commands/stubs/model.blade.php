@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class {{$pascalCase}} extends Model
 {
+    public $table = '{{$plural}}';
+
     protected $fillable = [
         @php
             /** @var \App\Console\Commands\DataType $dataType */
