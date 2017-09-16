@@ -69,7 +69,8 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
+        $attributes = $this->keysToSnakeCase(
+            $this->validate($request, $this->rules()));
 
         /** @var  Person $person */
         $person = tap(new Person)->fill($attributes);
@@ -89,7 +90,8 @@ class PersonController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
+        $attributes = $this->keysToSnakeCase(
+            $this->validate($request, $this->rules()));
 
         /** @var  Person $person */
         $person = Person::where('id', $id)->firstOrFail();
@@ -130,4 +132,4 @@ class PersonController extends Controller
                                                                         ],
                                     ];
     }
-}
+        }

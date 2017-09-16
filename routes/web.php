@@ -51,3 +51,38 @@ $router->put('/battles/{id}', 'BattleController@update');
 $router->delete('/battles/{id}', 'BattleController@destroy');
 $router->post('/battles', 'BattleController@store');
 
+
+$router->get('/persons', 'PersonController@index');
+$router->get('/persons/{id}', 'PersonController@show');
+$router->put('/persons/{id}', 'PersonController@update');
+$router->delete('/persons/{id}', 'PersonController@destroy');
+$router->post('/persons', 'PersonController@store');
+
+
+$router->get('/persons', 'PersonController@index');
+$router->get('/persons/{id}', 'PersonController@show');
+$router->put('/persons/{id}', 'PersonController@update');
+$router->delete('/persons/{id}', 'PersonController@destroy');
+$router->post('/persons', 'PersonController@store');
+
+
+$router->get('/persons', 'PersonController@index');
+$router->get('/persons/{id}', 'PersonController@show');
+$router->put('/persons/{id}', 'PersonController@update');
+$router->delete('/persons/{id}', 'PersonController@destroy');
+$router->post('/persons', 'PersonController@store');
+
+
+$router->get('/persons', 'PersonController@index');
+$router->get('/persons/{id}', 'PersonController@show');
+$router->put('/persons/{id}', 'PersonController@update');
+$router->delete('/persons/{id}', 'PersonController@destroy');
+$router->post('/persons', 'PersonController@store');
+
+
+$router->get('/persons', 'PersonController@index');
+$router->get('/persons/{id}', 'PersonController@show');
+$router->put('/persons/{id}', 'PersonController@update');
+$router->delete('/persons/{id}', 'PersonController@destroy');
+$router->post('/persons', 'PersonController@store');
+

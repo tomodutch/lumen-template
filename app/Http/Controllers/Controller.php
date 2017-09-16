@@ -19,4 +19,15 @@ class Controller extends BaseController
             return str_contains($rule, '.') ? explode('.', $rule)[0] : $rule;
         })->unique()->toArray());
     }
+
+    public function keysToSnakeCase(array $input)
+    {
+        $snakeCased = [];
+
+        foreach ($input as $key => $value) {
+            $snakeCased[snake_case($key)] = $value;
+        }
+
+        return $snakeCased;
+    }
 }

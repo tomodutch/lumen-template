@@ -67,7 +67,8 @@ class {{$pascalCase}}Controller extends Controller
      */
     public function store(Request $request)
     {
-        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
+        $attributes = $this->keysToSnakeCase(
+            $this->validate($request, $this->rules()));
 
         /** @var {{$pascalCase}} ${{$camelCase}} */
         ${{$camelCase}} = tap(new {{$pascalCase}})->fill($attributes);
@@ -87,7 +88,8 @@ class {{$pascalCase}}Controller extends Controller
      */
     public function update(Request $request, $id)
     {
-        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
+        $attributes = $this->keysToSnakeCase(
+            $this->validate($request, $this->rules()));
 
         /** @var {{$pascalCase}} ${{$camelCase}} */
         ${{$camelCase}} = {{$pascalCase}}::where('id', $id)->firstOrFail();
@@ -132,4 +134,29 @@ class {{$pascalCase}}Controller extends Controller
             @endforeach
         ];
     }
+    @if ($inlineSnakeCase)
+        public function keysToSnakeCase(array $input)
+        {
+            $snakeCased = [];
+
+            foreach ($input as $key => $value) {
+                $snakeCased[snake_case($key)] = $value;
+            }
+
+            return $snakeCased;
+        }
+    @endif
+    @if ($inlineValidate)
+        public function validate(Request $request, array $rules = [], array $messages = [], array $customAttributes = []): array
+        {
+            /** @var \Illuminate\Validation\Validator $validator */
+            $validator = Validator::make($request->all(), $rules);
+
+            $validator->validate();
+
+            return $request->only(collect($rules)->keys()->map(function ($rule) {
+                return str_contains($rule, '.') ? explode('.', $rule)[0] : $rule;
+            })->unique()->toArray());
+        }
+    @endif
 }

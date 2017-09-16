@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 
+use App\Requests\Request;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
@@ -179,7 +180,18 @@ class CMakeResource extends Command
 
     public function createController()
     {
-        $viewParams = $this->getViewParams();
+        $inlineValidate = true;
+        $inlineSnakeCase = true;
+        if (class_exists('App\Http\Controllers\Controller')) {
+            $controller = new \App\Http\Controllers\Controller();
+            $attributes = $controller->validate(app(Request::class), []);
+            $inlineValidate = $attributes === null;
+            $inlineSnakeCase = !method_exists($controller, 'keysToSnakeCase');
+        }
+
+        $viewParams = array_merge(compact('inlineValidate', 'inlineSnakeCase'),
+            $this->getViewParams());
+
         $contents = $this->view->make('controller', $viewParams)->render();
         $dest = base_path(implode(DIRECTORY_SEPARATOR,
             ['app', 'Http', 'Controllers', "{$this->pascalCase}Controller.php"]));
