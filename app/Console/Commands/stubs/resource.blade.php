@@ -24,7 +24,7 @@ class {{$pascalCase}} extends Resource
                 return $this->created_at->toISO8601String();
             }, null),
             'updatedAt' => $this->when($this->updated_at, function() {
-                $this->updated_at->toISO8601String();
+                return $this->updated_at->toISO8601String();
             }, null)
         ];
     }

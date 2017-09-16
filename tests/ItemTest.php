@@ -45,11 +45,11 @@ class ItemTest extends TestCase
      */
     public function store()
     {
-        /** @var Item $item */
         $item = factory(Item::class)->make();
         $data = json_decode(json_encode(new ItemResource($item)), true);
 
         $this->json('POST', $this->route(), $data);
+
         $attributes = array_only($item->toArray(), $item->getFillable());
         $query = Item::query();
         foreach ($attributes as $key => $value) {
@@ -74,15 +74,14 @@ class ItemTest extends TestCase
      */
     public function update()
     {
-        /** @var Item $item */
         $item = factory(Item::class)->create();
-        /** @var Item $otherItem */
         $otherItem = factory(Item::class)->make([
             'id' => $item->id
         ]);
 
-        $data = json_decode(json_encode(new ItemResource($otherItem)), true);
+        $data = json_decode(json_encode(new ItemResource($item)), true);
         $this->json('PUT', $this->route($item), $data);
+
         $this->assertEquals(
             $otherItem->getFillable(),
             Item::where('id', $item->id)->firstOrFail()->getFillable()
