@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\{{$modelName}};
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class {{$className}} extends Controller
 {
@@ -80,21 +81,34 @@ class {{$className}} extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
+     * @param  mixed $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
+        $attributes = $this->validate($request, $this->rules());
 
+        /** @var {{$modelName}} ${{$camelCase}} */
+        ${{$camelCase}} = {{$modelName}}::where('id', $id)->firstOrFail();
+        ${{$camelCase}}->fill($attributes)->saveOrFail();
+
+        return new {{$pascalCase}}Resource(${{$camelCase}});
     }
 
     /**
      * Remove the specified resource from storage.
      *
+     * @param  mixed $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy()
+    public function destroy($id)
     {
+        ${{$camelCase}} = {{$modelName}}::where('id', $id)->first();
+        if (${{$camelCase}}) {
+            ${{$camelCase}}->delete();
+        }
 
+        return response('', Response::HTTP_NO_CONTENT);
     }
 
     public function rules() {
