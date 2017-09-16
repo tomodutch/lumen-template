@@ -10,8 +10,7 @@ class Thomas extends Model
     public $table = 'thomass';
 
     protected $fillable = [
-                                            'id',
-                                                'title',
+                                                                'title',
                                                 'age',
                                                 'date_of_birth',
                         ];

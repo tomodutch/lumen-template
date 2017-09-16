@@ -17,8 +17,8 @@ $router->put('/articles/{id}', 'ArticleController@update');
 $router->delete('/articles/{id}', 'ArticleController@delete');
 $router->post('/articles', 'ArticleController@create');
 
-$router->get('/pascals', 'PascalController@index');
-$router->get('/pascals/{id}', 'PascalController@show');
-$router->put('/pascals/{id}', 'PascalController@update');
-$router->delete('/pascals/{id}', 'PascalController@destroy');
-$router->post('/pascals', 'PascalController@store');
+$router->get('/thomass', 'ThomasController@index');
+$router->get('/thomass/{id}', 'ThomasController@show');
+$router->put('/thomass/{id}', 'ThomasController@update');
+$router->delete('/thomass/{id}', 'ThomasController@destroy');
+$router->post('/thomass', 'ThomasController@store');

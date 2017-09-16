@@ -69,7 +69,7 @@ class ThomasController extends Controller
      */
     public function store(Request $request)
     {
-        $attributes = $this->validate($request, $this->rules());
+        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
 
         /** @var  Thomas $thomas */
         $thomas = tap(new Thomas)->fill($attributes);
@@ -89,7 +89,7 @@ class ThomasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $attributes = $this->validate($request, $this->rules());
+        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
 
         /** @var  Thomas $thomas */
         $thomas = Thomas::where('id', $id)->firstOrFail();
@@ -117,11 +117,6 @@ class ThomasController extends Controller
     public function rules()
     {
         return [
-            'id' => [
-                'required',
-                'string',
-                new \App\Rules\ValidUUID(),
-            ],
             'title' => [
                 'required',
                 'string',
@@ -130,7 +125,7 @@ class ThomasController extends Controller
                 'required',
                 'numeric',
             ],
-            'date_of_birth' => [
+            'dateOfBirth' => [
                 'required',
                 'date',
             ],

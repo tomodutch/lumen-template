@@ -67,7 +67,7 @@ class {{$pascalCase}}Controller extends Controller
      */
     public function store(Request $request)
     {
-        $attributes = $this->validate($request, $this->rules());
+        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
 
         /** @var {{$pascalCase}} ${{$camelCase}} */
         ${{$camelCase}} = tap(new {{$pascalCase}})->fill($attributes);
@@ -87,7 +87,7 @@ class {{$pascalCase}}Controller extends Controller
      */
     public function update(Request $request, $id)
     {
-        $attributes = $this->validate($request, $this->rules());
+        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
 
         /** @var {{$pascalCase}} ${{$camelCase}} */
         ${{$camelCase}} = {{$pascalCase}}::where('id', $id)->firstOrFail();
@@ -119,7 +119,7 @@ class {{$pascalCase}}Controller extends Controller
             @endphp
             @foreach ($dataTypes as $dataType)
                 @unless (in_array($dataType, $primaryIdDataTypes->toArray()))
-                    '{{$dataType->getName()}}' => [
+                    '{{camel_case($dataType->getName())}}' => [
                         @foreach ($dataType->getRules() as $rule)
                             @if (class_exists($rule))
                                 new {{$rule}}(),
