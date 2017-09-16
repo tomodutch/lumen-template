@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Test extends Model
 {
-    protected $primaryKey = 'id';
-
+            protected $primaryKey = 'id';
+    
     protected $fillable = [
-        'title',
-    ];
+                                                                'title',
+                        ];
 }

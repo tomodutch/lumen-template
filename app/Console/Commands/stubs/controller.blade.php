@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\{{$modelName}};
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Resources\{{$pascalCase}} as {{$pascalCase}}Resource;
+use App\Resources\{{$pascalCase}}Collection as {{$pascalCase}}CollectionResource;
 
 class {{$className}} extends Controller
 {

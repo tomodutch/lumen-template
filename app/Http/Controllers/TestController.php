@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Test;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Resources\Test as TestResource;
+use App\Resources\TestCollection as TestCollectionResource;
 
 class TestController extends Controller
 {
