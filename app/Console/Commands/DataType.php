@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 
 use App\Rules\ValidUUID;
+use Illuminate\Database\Schema\Blueprint;
 
 class DataType
 {
@@ -24,17 +25,19 @@ class DataType
      */
     public function __construct($name, $type)
     {
+        $this->name = $name;
+        $this->type = $type;
+
         if ($this->isValidType($type) === false) {
             throw new \InvalidArgumentException("Type \"$type\" is not recognized");
         }
-
-        $this->name = $name;
-        $this->type = $type;
     }
 
     public function isValidType()
     {
-        return true;
+        $blueprint = new Blueprint('');
+
+        return method_exists($blueprint, $this->type);
     }
 
     /**
@@ -59,11 +62,52 @@ class DataType
         $additionalRules = [];
 
         if ($this->type === 'uuid') {
+            $additionalRules[] = 'string';
             $additionalRules[] = '\\' . ValidUUID::class;
         }
 
-        if ($this->type === 'string') {
+        if (in_array($this->type, [
+            'string',
+            'char',
+            'ipAddress',
+            'longText',
+            'macAddress',
+            'text'
+        ])) {
             $additionalRules[] = 'string';
+        }
+
+        if (in_array($this->type, [
+            'bigIncrements',
+            'increments',
+            'mediumIncrements',
+            'smallIncrements',
+            'decimal',
+            'double',
+            'float',
+            'integer',
+            'mediumInteger',
+            'smallInteger',
+            'tinyInteger',
+            'unsignedBigInteger',
+            'unsignedInteger',
+            'unsignedMediumInteger',
+            'unsignedSmallInteger',
+            'unsignedTinyInteger'
+        ])) {
+            $additionalRules[] = 'numeric';
+        }
+
+        if (in_array($this->type, [
+            'date',
+            'dateTime',
+            'dateTimeTz',
+            'time',
+            'timeTz',
+            'timestamp',
+            'timestampTz',
+        ])) {
+            $additionalRules[] = 'date';
         }
 
         return array_merge($standardRules, $additionalRules);
@@ -71,7 +115,12 @@ class DataType
 
     public function isPrimaryKey()
     {
-        return $this->name === 'id';
+        return in_array($this->type, [
+            'bigIncrements',
+            'increments',
+            'mediumIncrements',
+            'smallIncrements',
+        ]);
     }
 
     public static function fromString($definition)
