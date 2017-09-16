@@ -4,31 +4,34 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class Articles extends Migration
+class CreateBobs extends Migration
 {
     /**
      * Run the migrations.
      *
-     * @return void
+     * @return  void
      */
     public function up()
     {
-        Schema::create('articles', function(Blueprint $table) {
-            $table->increments('id');
+        Schema::create('bobs', function (Blueprint $table) {
+            $table->uuid('id');
             $table->string('title');
 
             $table->timestampsTz();
+
+            $table->primary([
+                'id',
+            ]);
         });
     }
 
     /**
      * Reverse the migrations.
      *
-     * @return void
+     * @return  void
      */
     public function down()
     {
-        //
-        Schema::drop('articles');
+        Schema::drop('bobs');
     }
 }

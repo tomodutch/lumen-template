@@ -3,11 +3,16 @@
 namespace App\Console\Commands;
 
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Composer;
 use Illuminate\View\Factory;
 
 class CMakeResource extends Command
 {
+    /** @var Composer */
+    private $composer;
+
     /** @var Factory $view */
     private $view;
 
@@ -40,6 +45,14 @@ class CMakeResource extends Command
      */
     protected $description = 'Generate an API resource including its model, resource, controller, factory and migrations';
 
+    public function __construct(Composer $composer)
+    {
+        parent::__construct();
+
+        $this->view = app('view');
+        $this->composer = $composer;
+    }
+
     /**
      * Execute the console command.
      *
@@ -52,7 +65,6 @@ class CMakeResource extends Command
         $this->pascalCase = ucfirst($this->camelCase);
         $this->plural = $this->argument('plural');
 
-        $this->view = app('view');
         $this->view->addLocation(implode(DIRECTORY_SEPARATOR, [__DIR__, 'stubs']));
 
         $this->dataTypes = collect($this->argument('fields'))->map(function ($definition) {
@@ -63,10 +75,27 @@ class CMakeResource extends Command
             return $dataType->isPrimaryKey();
         })->toArray();
 
+        $this->createMigration();
         $this->createModel();
         $this->createViewResource();
         $this->createCollectionViewResource();
         $this->createController();
+
+        $this->line('<info>Dumping composer autoload</info>');
+        $this->composer->dumpAutoloads();
+    }
+
+    public function createMigration()
+    {
+        $now = Carbon::now();
+        $fileName = $now->format('Y_m_d_His') . '_' . "create_{$this->plural}.php";
+
+        $viewParams = $this->getViewParams();
+        $contents = $this->view->make('migration', $viewParams)->render();
+        $dest = base_path(implode(DIRECTORY_SEPARATOR,
+            ['database', 'migrations', $fileName]));
+
+        $this->writeFile($dest, '<?php' . PHP_EOL . PHP_EOL . $contents);
     }
 
     public function createViewResource()
