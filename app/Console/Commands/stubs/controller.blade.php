@@ -1,13 +1,12 @@
-
 namespace App\Http\Controllers;
 
-use App\{{$modelName}};
+use App\{{$pascalCase}};
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Resources\{{$pascalCase}} as {{$pascalCase}}Resource;
 use App\Resources\{{$pascalCase}}Collection as {{$pascalCase}}CollectionResource;
 
-class {{$className}} extends Controller
+class {{$pascalCase}}Controller extends Controller
 {
     /**
      * Create a new controller instance.
@@ -35,7 +34,7 @@ class {{$className}} extends Controller
         * You might run into performance issues when the skip is high
         * For a solution see (https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
         */
-        $query = {{$modelName}}::query();
+        $query = {{$pascalCase}}::query();
         $total = $query->count();
         ${{$plural}} = $query->skip($skip)->take($take)->get();
 
@@ -55,7 +54,7 @@ class {{$className}} extends Controller
     */
     public function show($id)
     {
-        ${{$camelCase}} = {{$modelName}}::where('id', $id)->firstOrFail();
+        ${{$camelCase}} = {{$pascalCase}}::where('id', $id)->firstOrFail();
 
         return new {{$pascalCase}}Resource(${{$camelCase}});
     }
@@ -70,8 +69,8 @@ class {{$className}} extends Controller
     {
         $attributes = $this->validate($request, $this->rules());
 
-        /** @var {{$modelName}} ${{$camelCase}} */
-        ${{$camelCase}} = tap(new {{$modelName}})->fill($attributes);
+        /** @var {{$pascalCase}} ${{$camelCase}} */
+        ${{$camelCase}} = tap(new {{$pascalCase}})->fill($attributes);
         ${{$camelCase}}->saveOrFail();
 
         return (new {{$pascalCase}}Resource(${{$camelCase}}))
@@ -90,8 +89,8 @@ class {{$className}} extends Controller
     {
         $attributes = $this->validate($request, $this->rules());
 
-        /** @var {{$modelName}} ${{$camelCase}} */
-        ${{$camelCase}} = {{$modelName}}::where('id', $id)->firstOrFail();
+        /** @var {{$pascalCase}} ${{$camelCase}} */
+        ${{$camelCase}} = {{$pascalCase}}::where('id', $id)->firstOrFail();
         ${{$camelCase}}->fill($attributes)->saveOrFail();
 
         return new {{$pascalCase}}Resource(${{$camelCase}});
@@ -105,7 +104,7 @@ class {{$className}} extends Controller
      */
     public function destroy($id)
     {
-        ${{$camelCase}} = {{$modelName}}::where('id', $id)->first();
+        ${{$camelCase}} = {{$pascalCase}}::where('id', $id)->first();
         if (${{$camelCase}}) {
             ${{$camelCase}}->delete();
         }
@@ -119,7 +118,7 @@ class {{$className}} extends Controller
                 /** @var \App\Console\Commands\DataType $dataType */
             @endphp
             @foreach ($dataTypes as $dataType)
-                @unless ($dataType == $primaryIdDataType)
+                @unless (in_array($dataType, $primaryIdDataTypes))
                     '{{$dataType->getName()}}' => [
                         @foreach ($dataType->getRules() as $rule)
                             @if (class_exists($rule))
