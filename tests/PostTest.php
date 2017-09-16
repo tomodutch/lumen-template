@@ -20,9 +20,9 @@ class PostTest extends TestCase
 
         $this->json('GET', $this->route());
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new PostResourceCollection($posts)));
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(new PostResourceCollection($posts)),
+            $this->response->content());
     }
 
     /**
@@ -34,9 +34,9 @@ class PostTest extends TestCase
 
         $this->json('GET', $this->route($post));
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new PostResource($post))
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(new PostResource($post)),
+            $this->response->content()
         );
     }
 
@@ -50,10 +50,13 @@ class PostTest extends TestCase
 
         $this->json('POST', $this->route(), $data);
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new PostResource($post))
-        );
+        $attributes = array_only($post->toArray(), $post->getFillable());
+        $query = Post::query();
+        foreach ($attributes as $key => $value) {
+            $query->where($key, $value);
+        }
+
+        $this->assertNotNull($query->first());
     }
 
     /**
@@ -79,9 +82,9 @@ class PostTest extends TestCase
         $data = json_decode(json_encode(new PostResource($post)), true);
         $this->json('PUT', $this->route($post), $data);
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new PostResource($otherPost))
+        $this->assertEquals(
+            $otherPost->getFillable(),
+            Post::where('id', $post->id)->firstOrFail()->getFillable()
         );
     }
 

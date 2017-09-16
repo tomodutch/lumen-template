@@ -409,7 +409,17 @@ class PostTest extends TestCase
         return '/posts/' . optional($post)->id;
     }
 }
+```
 
+## Routes
+```php
+<?php
+
+$router->get('/posts', 'PostController@index');
+$router->get('/posts/{id}', 'PostController@show');
+$router->put('/posts/{id}', 'PostController@update');
+$router->delete('/posts/{id}', 'PostController@destroy');
+$router->post('/posts', 'PostController@store');
 ```
 
 # Project state

@@ -11,14 +11,21 @@
 |
 */
 
-$router->get('/articles', 'ArticleController@getMany');
-$router->get('/articles/{id}', 'ArticleController@getOne');
-$router->put('/articles/{id}', 'ArticleController@update');
-$router->delete('/articles/{id}', 'ArticleController@delete');
-$router->post('/articles', 'ArticleController@create');
+$router->get('/items', 'ItemController@index');
+$router->get('/items/{id}', 'ItemController@show');
+$router->put('/items/{id}', 'ItemController@update');
+$router->delete('/items/{id}', 'ItemController@destroy');
+$router->post('/items', 'ItemController@store');
 
 $router->get('/posts', 'PostController@index');
 $router->get('/posts/{id}', 'PostController@show');
 $router->put('/posts/{id}', 'PostController@update');
 $router->delete('/posts/{id}', 'PostController@destroy');
 $router->post('/posts', 'PostController@store');
+
+$router->get('/persons', 'PersonController@index');
+$router->get('/persons/{id}', 'PersonController@show');
+$router->put('/persons/{id}', 'PersonController@update');
+$router->delete('/persons/{id}', 'PersonController@destroy');
+$router->post('/persons', 'PersonController@store');
+

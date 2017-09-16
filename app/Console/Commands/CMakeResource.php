@@ -101,6 +101,7 @@ class CMakeResource extends Command
         $this->createViewResource();
         $this->createCollectionViewResource();
         $this->createController();
+        $this->createRoutes();
 
         $this->line('<info>Dumping composer autoload</info>');
         $this->composer->dumpAutoloads();
@@ -184,6 +185,17 @@ class CMakeResource extends Command
             ['app', 'Http', 'Controllers', "{$this->pascalCase}Controller.php"]));
 
         $this->writeFile($dest, '<?php' . PHP_EOL . PHP_EOL . $contents);
+    }
+
+    public function createRoutes()
+    {
+        $viewParams = $this->getViewParams();
+        $contents = $this->view->make('routes', $viewParams)->render();
+        $web = base_path(implode(DIRECTORY_SEPARATOR, [
+            'routes', 'web.php'
+        ]));
+
+        file_put_contents($web, PHP_EOL . $contents . PHP_EOL, FILE_APPEND);
     }
 
     public function getViewParams()

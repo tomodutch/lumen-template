@@ -14,6 +14,8 @@ class {{$pascalCase}} extends Resource
             @foreach ($dataTypes as $dataType)
                 @if ($dataType->isDate())
                     '{{camel_case($dataType->getName())}}' => $this->{{$dataType->getName()}}->toISO8601String(),
+                @elseif ($dataType->isBoolean())
+                    '{{camel_case($dataType->getName())}}' => (bool)$this->{{$dataType->getName()}},
                 @else
                     '{{camel_case($dataType->getName())}}' => $this->{{$dataType->getName()}},
                 @endif

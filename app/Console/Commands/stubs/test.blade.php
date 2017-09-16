@@ -18,9 +18,9 @@ class {{$pascalCase}}Test extends TestCase
 
         $this->json('GET', $this->route());
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new {{$pascalCase}}ResourceCollection(${{$camelCase}}s)));
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(new {{$pascalCase}}ResourceCollection(${{$plural}})),
+            $this->response->content());
     }
 
     /**
@@ -32,9 +32,9 @@ class {{$pascalCase}}Test extends TestCase
 
         $this->json('GET', $this->route(${{$camelCase}}));
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new {{$pascalCase}}Resource(${{$camelCase}}))
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(new {{$pascalCase}}Resource(${{$camelCase}})),
+            $this->response->content()
         );
     }
 
@@ -48,10 +48,13 @@ class {{$pascalCase}}Test extends TestCase
 
         $this->json('POST', $this->route(), $data);
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new {{$pascalCase}}Resource(${{$camelCase}}))
-        );
+        $attributes = array_only(${{$camelCase}}->toArray(), ${{$camelCase}}->getFillable());
+        $query = {{$pascalCase}}::query();
+        foreach ($attributes as $key => $value) {
+            $query->where($key, $value);
+        }
+
+        $this->assertNotNull($query->first());
     }
 
     /**
@@ -77,9 +80,9 @@ class {{$pascalCase}}Test extends TestCase
         $data = json_decode(json_encode(new {{$pascalCase}}Resource(${{$camelCase}})), true);
         $this->json('PUT', $this->route(${{$camelCase}}), $data);
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new {{$pascalCase}}Resource($other{{$pascalCase}}))
+        $this->assertEquals(
+            $other{{$pascalCase}}->getFillable(),
+            {{$pascalCase}}::where('id', ${{$camelCase}}->id)->firstOrFail()->getFillable()
         );
     }
 

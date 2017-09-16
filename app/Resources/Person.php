@@ -5,7 +5,7 @@ namespace App\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class Post extends Resource
+class Person extends Resource
 {
     public function toArray($request)
     {
