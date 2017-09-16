@@ -88,13 +88,14 @@ class CMakeResource extends Command
             return $dataType->isPrimaryKey();
         });
 
-        $this->primaryIdDataTypes->each(function(DataType $dataType) {
+        $this->primaryIdDataTypes->each(function (DataType $dataType) {
             if ($dataType->getType() === 'uuid' && $dataType->isPrimaryKey()) {
                 $this->useUuidAsPrimaryKey = true;
             }
         });
 
         $this->createMigration();
+        $this->createFactory();
         $this->createModel();
         $this->createViewResource();
         $this->createCollectionViewResource();
@@ -118,6 +119,17 @@ class CMakeResource extends Command
         $contents = $this->view->make('migration', $viewParams)->render();
         $dest = base_path(implode(DIRECTORY_SEPARATOR,
             ['database', 'migrations', $fileName]));
+
+        $this->writeFile($dest, '<?php' . PHP_EOL . PHP_EOL . $contents);
+    }
+
+    public function createFactory()
+    {
+        $viewParams = $this->getViewParams();
+        $fileName = $this->pascalCase . 'Factory.php';
+        $contents = $this->view->make('factory', $viewParams)->render();
+        $dest = base_path(implode(DIRECTORY_SEPARATOR,
+            ['database', 'factories', $fileName]));
 
         $this->writeFile($dest, '<?php' . PHP_EOL . PHP_EOL . $contents);
     }

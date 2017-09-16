@@ -82,40 +82,16 @@ class DataType
 
         $additionalRules = [];
 
-        if ($this->type === 'uuid') {
+        if ($this->isUuid()) {
             $additionalRules[] = 'string';
             $additionalRules[] = '\\' . ValidUUID::class;
         }
 
-        if (in_array($this->type, [
-            'string',
-            'char',
-            'ipAddress',
-            'longText',
-            'macAddress',
-            'text'
-        ])) {
+        if ($this->isString()) {
             $additionalRules[] = 'string';
         }
 
-        if (in_array($this->type, [
-            'bigIncrements',
-            'increments',
-            'mediumIncrements',
-            'smallIncrements',
-            'decimal',
-            'double',
-            'float',
-            'integer',
-            'mediumInteger',
-            'smallInteger',
-            'tinyInteger',
-            'unsignedBigInteger',
-            'unsignedInteger',
-            'unsignedMediumInteger',
-            'unsignedSmallInteger',
-            'unsignedTinyInteger'
-        ])) {
+        if ($this->isNumeric()) {
             $additionalRules[] = 'numeric';
         }
 
@@ -123,7 +99,7 @@ class DataType
             $additionalRules[] = 'date';
         }
 
-        if ($this->type === 'boolean') {
+        if ($this->isBoolean()) {
             $additionalRules[] = 'boolean';
         }
 
@@ -145,6 +121,16 @@ class DataType
         ]);
     }
 
+    public function isBoolean()
+    {
+        return $this->type === 'boolean';
+    }
+
+    public function isUuid()
+    {
+        return $this->type === 'uuid';
+    }
+
     public function isDate()
     {
         return in_array($this->type, [
@@ -155,6 +141,46 @@ class DataType
             'timeTz',
             'timestamp',
             'timestampTz',
+        ]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isString(): bool
+    {
+        return in_array($this->type, [
+            'string',
+            'char',
+            'ipAddress',
+            'longText',
+            'macAddress',
+            'text'
+        ]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNumeric(): bool
+    {
+        return in_array($this->type, [
+            'bigIncrements',
+            'increments',
+            'mediumIncrements',
+            'smallIncrements',
+            'decimal',
+            'double',
+            'float',
+            'integer',
+            'mediumInteger',
+            'smallInteger',
+            'tinyInteger',
+            'unsignedBigInteger',
+            'unsignedInteger',
+            'unsignedMediumInteger',
+            'unsignedSmallInteger',
+            'unsignedTinyInteger'
         ]);
     }
 

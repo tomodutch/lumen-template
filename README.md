@@ -1,5 +1,5 @@
 # Generator
-Generate resources, models, controllers, validation and migrations
+Generate resources, models, controllers, validation factories and migrations
 
 ```sh
 php artisan cmake:resource Post posts id:uuid:primary title:string body:text is_featured:boolean:nullable --softDeletes
@@ -287,6 +287,19 @@ class PostCollection extends ResourceCollection
         return $this->collection;
     }
 }
+```
+
+## Factory
+```php
+<?php
+
+$factory->define(\App\Post::class, function (\Faker\Generator $faker) {
+    return [
+        'title' => $faker->word,
+        'body' => $faker->word,
+        'is_featured' => $faker->boolean,
+    ];
+});
 ```
 
 # Project state
