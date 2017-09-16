@@ -73,14 +73,11 @@ class DataType
 
     public function getRules()
     {
-        $standardRules = [];
-        if ($this->isNullable()) {
-            $standardRules[] = 'nullable';
-        } else {
-            $standardRules[] = 'required';
-        }
-
+        $standardRules = ['required'];
         $additionalRules = [];
+        if ($this->isNullable()) {
+            $standardRules = ['nullable'];
+        }
 
         if ($this->isUuid()) {
             $additionalRules[] = 'string';

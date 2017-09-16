@@ -75,12 +75,12 @@ class Handler extends ExceptionHandler
             default:
                 if (env('APP_DEBUG') || config('app.debug')) {
                     return parent::render($request, $e);
-                } else {
-                    return new GenericResource(new Generic([
-                        'http' => Response::HTTP_SERVICE_UNAVAILABLE,
-                        'code' => 999
-                    ]));
                 }
+
+                return new GenericResource(new Generic([
+                    'http' => Response::HTTP_SERVICE_UNAVAILABLE,
+                    'code' => 999
+                ]));
 
                 break;
         }

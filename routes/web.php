@@ -37,3 +37,17 @@ $router->put('/items/{id}', 'ItemController@update');
 $router->delete('/items/{id}', 'ItemController@destroy');
 $router->post('/items', 'ItemController@store');
 
+
+$router->get('/pieters', 'PieterController@index');
+$router->get('/pieters/{id}', 'PieterController@show');
+$router->put('/pieters/{id}', 'PieterController@update');
+$router->delete('/pieters/{id}', 'PieterController@destroy');
+$router->post('/pieters', 'PieterController@store');
+
+
+$router->get('/battles', 'BattleController@index');
+$router->get('/battles/{id}', 'BattleController@show');
+$router->put('/battles/{id}', 'BattleController@update');
+$router->delete('/battles/{id}', 'BattleController@destroy');
+$router->post('/battles', 'BattleController@store');
+

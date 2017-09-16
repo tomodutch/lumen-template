@@ -13,7 +13,9 @@
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "phpunit/phpunit": "~6.0",
-        "mockery/mockery": "~0.9"
+        "mockery/mockery": "~0.9",
+        "phpro/grumphp": "^0.12.0",
+        "phpmd/phpmd": "^2.6"
     },
     "autoload": {
         "psr-4": {

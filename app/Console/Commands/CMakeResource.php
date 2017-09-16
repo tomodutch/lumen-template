@@ -218,11 +218,7 @@ class CMakeResource extends Command
             $shouldOverride = null;
             while ($shouldOverride === null) {
                 $answer = strtolower($this->ask($question));
-                if (in_array($answer, ['y', 'n']) === false) {
-                    $this->error('Answer should be either Y or N');
-                } else {
-                    $shouldOverride = $answer === 'y';
-                }
+                $shouldOverride = $answer === 'y';
             }
 
             if ($shouldOverride === false) {
@@ -230,9 +226,9 @@ class CMakeResource extends Command
             }
         }
 
-        $fh = fopen($dest, 'w');
-        fwrite($fh, $contents);
-        fclose($fh);
+        $handle = fopen($dest, 'w');
+        fwrite($handle, $contents);
+        fclose($handle);
 
         $this->line("<info>Created:</info> {$dest}");
     }
