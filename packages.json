@@ -1,0 +1,8 @@
+{
+  "packages": {
+    "TFarla/lumen-template": {
+      "dev-master": { @composer.json },
+      "0.1.0": { @composer.json }
+    }
+  }
+}
