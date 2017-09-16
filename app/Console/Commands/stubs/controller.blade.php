@@ -117,15 +117,17 @@ class {{$className}} extends Controller
                 /** @var \App\Console\Commands\DataType $dataType */
             @endphp
             @foreach ($dataTypes as $dataType)
-                '{{$dataType->getName()}}' => [
-                    @foreach ($dataType->getRules() as $rule)
-                        @if (class_exists($rule))
-                            new {{$rule}}(),
-                        @else
-                            '{{$rule}}',
-                        @endif
-                    @endforeach
-                ],
+                @unless ($dataType == $primaryIdDataType)
+                    '{{$dataType->getName()}}' => [
+                        @foreach ($dataType->getRules() as $rule)
+                            @if (class_exists($rule))
+                                new {{$rule}}(),
+                            @else
+                                '{{$rule}}',
+                            @endif
+                        @endforeach
+                    ],
+                @endunless
             @endforeach
         ];
     }

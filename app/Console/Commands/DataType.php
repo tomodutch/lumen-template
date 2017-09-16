@@ -69,6 +69,11 @@ class DataType
         return array_merge($standardRules, $additionalRules);
     }
 
+    public function isPrimaryKey()
+    {
+        return $this->name === 'id';
+    }
+
     public static function fromString($definition)
     {
         $pieces = explode(':', $definition);
