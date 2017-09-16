@@ -35,6 +35,8 @@ class CMakeResource extends Command
     /** @var bool $implementSoftDeletes */
     private $implementSoftDeletes = false;
 
+    private $useUuidAsPrimaryKey = false;
+
     /**
      * The name and signature of the console command.
      *
@@ -84,6 +86,12 @@ class CMakeResource extends Command
 
         $this->primaryIdDataTypes = $this->dataTypes->filter(function (DataType $dataType) {
             return $dataType->isPrimaryKey();
+        });
+
+        $this->primaryIdDataTypes->each(function(DataType $dataType) {
+            if ($dataType->getType() === 'uuid' && $dataType->isPrimaryKey()) {
+                $this->useUuidAsPrimaryKey = true;
+            }
         });
 
         $this->createMigration();
@@ -162,7 +170,8 @@ class CMakeResource extends Command
             'plural' => $this->plural,
             'dataTypes' => $this->dataTypes,
             'primaryIdDataTypes' => $this->primaryIdDataTypes,
-            'implementSoftDeletes' => $this->implementSoftDeletes
+            'implementSoftDeletes' => $this->implementSoftDeletes,
+            'useUuidAsPrimaryKey' => $this->useUuidAsPrimaryKey
         ];
     }
 

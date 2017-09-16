@@ -32,28 +32,28 @@ class PostController extends Controller
         $skip = $request->get('skip', 0);
 
         /**
-         * Naive implementation of pagination
-         * You might run into performance issues when the skip is high
-         * For a solution see (https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
-         */
+        * Naive implementation of pagination
+        * You might run into performance issues when the skip is high
+        * For a solution see (https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
+        */
         $query = Post::query();
         $total = $query->count();
         $posts = $query->skip($skip)->take($take)->get();
 
         return (new PostCollectionResource($posts))
-            ->response()
-            ->header('X-PAGINATION-TOTAL', $total)
-            ->header('X-PAGINATION-SKIP', $skip)
-            ->header('X-PAGINATION-TAKE', $take)
-            ->header('X-PAGINATION-SUPPORT', true);
+        ->response()
+        ->header('X-PAGINATION-TOTAL', $total)
+        ->header('X-PAGINATION-SKIP', $skip)
+        ->header('X-PAGINATION-TAKE', $take)
+        ->header('X-PAGINATION-SUPPORT', true);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param    mixed $id
-     * @return  \Illuminate\Http\Response
-     */
+    * Display the specified resource.
+    *
+    * @param    mixed  $id
+    * @return  \Illuminate\Http\Response
+    */
     public function show($id)
     {
         $post = Post::where('id', $id)->firstOrFail();
@@ -114,21 +114,20 @@ class PostController extends Controller
         return response('', Response::HTTP_NO_CONTENT);
     }
 
-    public function rules()
-    {
+    public function rules() {
         return [
-            'title' => [
-                'required',
-                'string',
-            ],
-            'body' => [
-                'required',
-                'string',
-            ],
-            'isFeatured' => [
-                'nullable',
-                'boolean',
-            ],
-        ];
+                                                                                        'title' => [
+                                                                                    'required',
+                                                                                                                'string',
+                                                                        ],
+                                                                'body' => [
+                                                                                    'required',
+                                                                                                                'string',
+                                                                        ],
+                                                                'isFeatured' => [
+                                                                                    'nullable',
+                                                                                                                'boolean',
+                                                                        ],
+                                    ];
     }
 }

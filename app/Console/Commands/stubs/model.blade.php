@@ -5,6 +5,9 @@ use Illuminate\Database\Eloquent\Model;
 @if ($implementSoftDeletes)
 use Illuminate\Database\Eloquent\SoftDeletes;
 @endif
+@if ($useUuidAsPrimaryKey)
+use App\Traits\Uuids;
+@endif
 
 class {{$pascalCase}} extends Model
 {
@@ -12,6 +15,11 @@ class {{$pascalCase}} extends Model
 
     @if ($implementSoftDeletes)
         use SoftDeletes;
+    @endif
+
+    @if ($useUuidAsPrimaryKey)
+        use Uuids;
+        public $incrementing = false;
     @endif
 
     protected $fillable = [
