@@ -2,7 +2,7 @@
 Generate resources, models, controllers, validation factories, tests and migrations
 
 ```sh
-php artisan cmake:resource Post posts id:uuid:primary title:string body:text is_featured:boolean:nullable --softDeletes
+php artisan cmake:resource Group groups id:increments name:string:required:between[5,255] description:text --softDeletes
 ```
 
 # Options
@@ -40,13 +40,13 @@ Will generate the following files:
 
 namespace App\Http\Controllers;
 
-use App\Post;
+use App\Group;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Resources\Post as PostResource;
-use App\Resources\PostCollection as PostCollectionResource;
+use App\Resources\Group as GroupResource;
+use App\Resources\GroupCollection as GroupCollectionResource;
 
-class PostController extends Controller
+class GroupController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -74,11 +74,11 @@ class PostController extends Controller
          * You might run into performance issues when the skip is high
          * For a solution see (https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
          */
-        $query = Post::query();
+        $query = Group::query();
         $total = $query->count();
-        $posts = $query->skip($skip)->take($take)->get();
+        $groups = $query->skip($skip)->take($take)->get();
 
-        return (new PostCollectionResource($posts))
+        return (new GroupCollectionResource($groups))
             ->response()
             ->header('X-PAGINATION-TOTAL', $total)
             ->header('X-PAGINATION-SKIP', $skip)
@@ -94,9 +94,9 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $post = Post::where('id', $id)->firstOrFail();
+        $group = Group::where('id', $id)->firstOrFail();
 
-        return new PostResource($post);
+        return new GroupResource($group);
     }
 
     /**
@@ -107,13 +107,14 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
+        $attributes = $this->keysToSnakeCase(
+            $this->validate($request, $this->rules()));
 
-        /** @var  Post $post */
-        $post = tap(new Post)->fill($attributes);
-        $post->saveOrFail();
+        /** @var  Group $group */
+        $group = tap(new Group)->fill($attributes);
+        $group->saveOrFail();
 
-        return (new PostResource($post))
+        return (new GroupResource($group))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
     }
@@ -127,13 +128,14 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $attributes = keysToSnakeCase($this->validate($request, $this->rules()));
+        $attributes = $this->keysToSnakeCase(
+            $this->validate($request, $this->rules()));
 
-        /** @var  Post $post */
-        $post = Post::where('id', $id)->firstOrFail();
-        $post->fill($attributes)->saveOrFail();
+        /** @var  Group $group */
+        $group = Group::where('id', $id)->firstOrFail();
+        $group->fill($attributes)->saveOrFail();
 
-        return new PostResource($post);
+        return new GroupResource($group);
     }
 
     /**
@@ -144,9 +146,9 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        $post = Post::where('id', $id)->first();
-        if ($post) {
-            $post->delete();
+        $group = Group::where('id', $id)->first();
+        if ($group) {
+            $group->delete();
         }
 
         return response('', Response::HTTP_NO_CONTENT);
@@ -155,17 +157,14 @@ class PostController extends Controller
     public function rules()
     {
         return [
-            'title' => [
+            'name' => [
                 'required',
                 'string',
+                'between:5,255',
             ],
-            'body' => [
+            'description' => [
                 'required',
                 'string',
-            ],
-            'isFeatured' => [
-                'nullable',
-                'boolean',
             ],
         ];
     }
@@ -182,23 +181,23 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Post extends Model
+class Group extends Model
 {
-    public $table = 'posts';
+    public $table = 'groups';
 
     use SoftDeletes;
-   
+
+
     protected $fillable = [
-        'title',
-        'body',
-        'is_featured',
+        'name',
+        'description',
     ];
 
     protected $dates = [
         'deleted_at',
-
     ];
 }
+
 ```
 
 ## Migration
@@ -209,7 +208,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePosts extends Migration
+class CreateGroups extends Migration
 {
     /**
      * Run the migrations.
@@ -218,18 +217,12 @@ class CreatePosts extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->uuid('id');
-            $table->string('title');
-            $table->text('body');
-            $table->boolean('is_featured')->nullable();
+        Schema::create('groups', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->text('description');
 
             $table->timestampsTz();
-
-            $table->primary([
-                'id',
-            ]);
-
             $table->softDeletes();
         });
     }
@@ -241,7 +234,7 @@ class CreatePosts extends Migration
      */
     public function down()
     {
-        Schema::drop('posts');
+        Schema::drop('groups');
     }
 }
 ```
@@ -255,17 +248,20 @@ namespace App\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class Post extends Resource
+class Group extends Resource
 {
     public function toArray($request)
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'body' => $this->body,
-            'isFeatured' => $this->is_featured,
-            'createdAt' => $this->when($this->created_at, $this->created_at->toISO8601String(), null),
-            'updatedAt' => $this->when($this->updated_at, $this->updated_at->toISO8601String(), null)
+            'name' => $this->name,
+            'description' => $this->description,
+            'createdAt' => $this->when($this->created_at, function () {
+                return $this->created_at->toISO8601String();
+            }, null),
+            'updatedAt' => $this->when($this->updated_at, function () {
+                return $this->updated_at->toISO8601String();
+            }, null)
         ];
     }
 }
@@ -280,7 +276,7 @@ namespace App\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class PostCollection extends ResourceCollection
+class GroupCollection extends ResourceCollection
 {
     public function toArray($request)
     {
@@ -293,11 +289,10 @@ class PostCollection extends ResourceCollection
 ```php
 <?php
 
-$factory->define(\App\Post::class, function (\Faker\Generator $faker) {
+$factory->define(\App\Group::class, function (\Faker\Generator $faker) {
     return [
-        'title' => $faker->word,
-        'body' => $faker->word,
-        'is_featured' => $faker->boolean,
+        'name' => $faker->word,
+        'description' => $faker->word,
     ];
 });
 ```
@@ -308,11 +303,11 @@ $factory->define(\App\Post::class, function (\Faker\Generator $faker) {
 
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
-use App\Resources\Post as PostResource;
-use App\Resources\PostCollection as PostResourceCollection;
-use App\Post;
+use App\Resources\Group as GroupResource;
+use App\Resources\GroupCollection as GroupResourceCollection;
+use App\Group;
 
-class PostTest extends TestCase
+class GroupTest extends TestCase
 {
     use DatabaseMigrations;
     use DatabaseTransactions;
@@ -322,13 +317,13 @@ class PostTest extends TestCase
      */
     public function index()
     {
-        $posts = factory(Post::class, 5)->create();
+        $groups = factory(Group::class, 5)->create();
 
         $this->json('GET', $this->route());
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new PostResourceCollection($posts)));
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(new GroupResourceCollection($groups)),
+            $this->response->content());
     }
 
     /**
@@ -336,13 +331,13 @@ class PostTest extends TestCase
      */
     public function show()
     {
-        $post = factory(Post::class)->create();
+        $group = factory(Group::class)->create();
 
-        $this->json('GET', $this->route($post));
+        $this->json('GET', $this->route($group));
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new PostResource($post))
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(new GroupResource($group)),
+            $this->response->content()
         );
     }
 
@@ -351,15 +346,18 @@ class PostTest extends TestCase
      */
     public function store()
     {
-        $post = factory(Post::class)->make();
-        $data = json_decode(json_encode(new PostResource($post)), true);
+        $group = factory(Group::class)->make();
+        $data = json_decode(json_encode(new GroupResource($group)), true);
 
         $this->json('POST', $this->route(), $data);
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new PostResource($post))
-        );
+        $attributes = array_only($group->toArray(), $group->getFillable());
+        $query = Group::query();
+        foreach ($attributes as $key => $value) {
+            $query->where($key, $value);
+        }
+
+        $this->assertNotNull($query->first());
     }
 
     /**
@@ -377,17 +375,17 @@ class PostTest extends TestCase
      */
     public function update()
     {
-        $post = factory(Post::class)->create();
-        $otherPost = factory(Post::class)->make([
-            'id' => $post->id
+        $group = factory(Group::class)->create();
+        $otherGroup = factory(Group::class)->make([
+            'id' => $group->id
         ]);
 
-        $data = json_decode(json_encode(new PostResource($post)), true);
-        $this->json('PUT', $this->route($post), $data);
+        $data = json_decode(json_encode(new GroupResource($group)), true);
+        $this->json('PUT', $this->route($group), $data);
 
-        $this->assertJson(
-            $this->response->content(),
-            json_encode(new PostResource($otherPost))
+        $this->assertEquals(
+            $otherGroup->getFillable(),
+            Group::where('id', $group->id)->firstOrFail()->getFillable()
         );
     }
 
@@ -396,30 +394,28 @@ class PostTest extends TestCase
      */
     public function destroy()
     {
-        $post = factory(Post::class)->create();
+        $group = factory(Group::class)->create();
 
-        $this->json('DELETE', $this->route($post));
+        $this->json('DELETE', $this->route($group));
 
         $this->assertResponseStatus(\Illuminate\Http\Response::HTTP_NO_CONTENT);
-        $this->assertNull(Post::where('id', $post->id)->first());
+        $this->assertNull(Group::where('id', $group->id)->first());
     }
 
-    private function route(Post $post = null)
+    private function route(Group $group = null)
     {
-        return '/posts/' . optional($post)->id;
+        return '/groups/' . optional($group)->id;
     }
 }
 ```
 
 ## Routes
 ```php
-<?php
-
-$router->get('/posts', 'PostController@index');
-$router->get('/posts/{id}', 'PostController@show');
-$router->put('/posts/{id}', 'PostController@update');
-$router->delete('/posts/{id}', 'PostController@destroy');
-$router->post('/posts', 'PostController@store');
+$router->get('/groups', 'GroupController@index');
+$router->get('/groups/{id}', 'GroupController@show');
+$router->put('/groups/{id}', 'GroupController@update');
+$router->delete('/groups/{id}', 'GroupController@destroy');
+$router->post('/groups', 'GroupController@store');
 ```
 
 # Project state

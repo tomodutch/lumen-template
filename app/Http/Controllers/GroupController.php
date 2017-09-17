@@ -122,6 +122,11 @@ class GroupController extends Controller
             'name' => [
                 'required',
                 'string',
+                'between:5,255',
+            ],
+            'description' => [
+                'required',
+                'string',
             ],
         ];
     }

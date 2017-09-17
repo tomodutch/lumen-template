@@ -16,6 +16,13 @@ class DataType
         'text'
     ];
 
+    const INCREMENT_TYPES = [
+        'bigIncrements',
+        'increments',
+        'mediumIncrements',
+        'smallIncrements',
+    ];
+
     const NUMERIC_TYPES = [
         'bigIncrements',
         'increments',
@@ -163,12 +170,12 @@ class DataType
 
     public function isPrimaryKey()
     {
-        return $this->isPrimary || $this->isIncrements();
+        return $this->isPrimary || in_array($this->type, self::INCREMENT_TYPES);
     }
 
     public function isIncrements()
     {
-        return in_array($this->type, self::DATE_TYPES);
+        return in_array($this->type, self::INCREMENT_TYPES);
     }
 
     public function isBoolean()

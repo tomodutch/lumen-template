@@ -177,3 +177,17 @@ $router->put('/groups/{id}', 'GroupController@update');
 $router->delete('/groups/{id}', 'GroupController@destroy');
 $router->post('/groups', 'GroupController@store');
 
+
+$router->get('/groups', 'GroupController@index');
+$router->get('/groups/{id}', 'GroupController@show');
+$router->put('/groups/{id}', 'GroupController@update');
+$router->delete('/groups/{id}', 'GroupController@destroy');
+$router->post('/groups', 'GroupController@store');
+
+
+$router->get('/groups', 'GroupController@index');
+$router->get('/groups/{id}', 'GroupController@show');
+$router->put('/groups/{id}', 'GroupController@update');
+$router->delete('/groups/{id}', 'GroupController@destroy');
+$router->post('/groups', 'GroupController@store');
+
