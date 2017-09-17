@@ -123,8 +123,8 @@ class {{$pascalCase}}Controller extends Controller
                 @unless (in_array($dataType, $primaryIdDataTypes->toArray()))
                     '{{camel_case($dataType->getName())}}' => [
                         @foreach ($dataType->getRules() as $rule)
-                            @if (class_exists($rule))
-                                new {{$rule}}(),
+                            @if (str_contains($rule, ['::', 'new ']))
+                                {!! $rule !!},
                             @else
                                 '{{$rule}}',
                             @endif

@@ -2,12 +2,53 @@
 
 namespace App\Console\Commands;
 
-
-use App\Rules\ValidUUID;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Collection;
 
 class DataType
 {
+    const STRING_TYPES = [
+        'string',
+        'char',
+        'ipAddress',
+        'longText',
+        'macAddress',
+        'text'
+    ];
+
+    const NUMERIC_TYPES = [
+        'bigIncrements',
+        'increments',
+        'mediumIncrements',
+        'smallIncrements',
+        'decimal',
+        'double',
+        'float',
+        'integer',
+        'mediumInteger',
+        'smallInteger',
+        'tinyInteger',
+        'unsignedBigInteger',
+        'unsignedInteger',
+        'unsignedMediumInteger',
+        'unsignedSmallInteger',
+        'unsignedTinyInteger'
+    ];
+
+    const DATE_TYPES = [
+        'date',
+        'dateTime',
+        'dateTimeTz',
+        'time',
+        'timeTz',
+        'timestamp',
+        'timestampTz'
+    ];
+
+    const BOOL_TYPES = [
+        'boolean'
+    ];
+
     /**
      * @var string
      */
@@ -22,17 +63,21 @@ class DataType
 
     private $isNullable = true;
 
+    /** @var  Collection */
+    private $constraints;
+
     /**
      * DataType constructor.
      * @param string $name
      * @param string $type
      */
-    public function __construct($name, $type, $isPrimary, $isNullable)
+    public function __construct($name, $type, $isPrimary, $isNullable, $constraints)
     {
         $this->name = $name;
         $this->type = $type;
         $this->isPrimary = $isPrimary;
         $this->isNullable = $isNullable;
+        $this->constraints = $constraints;
 
         if ($this->isValidType() === false) {
             throw new \InvalidArgumentException("Type \"$type\" is not recognized");
@@ -81,7 +126,7 @@ class DataType
 
         if ($this->isUuid()) {
             $additionalRules[] = 'string';
-            $additionalRules[] = '\\' . ValidUUID::class;
+            $additionalRules[] = 'regex:/^\{?[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}\}?$/i';
         }
 
         if ($this->isString()) {
@@ -100,7 +145,20 @@ class DataType
             $additionalRules[] = 'boolean';
         }
 
-        return array_merge($standardRules, $additionalRules);
+        $constraintRules = $this->constraints->map(function ($values, $constraint) {
+            if (count($values) === 0) {
+                return $constraint;
+            }
+
+            if (in_array($constraint, ['in', 'not_in'])) {
+                return '\Illuminate\Validation\Rule::notIn(' . json_encode($values) . ')';
+            }
+
+
+            return $constraint . ':' . implode(',', $values);
+        })->toArray();
+
+        return array_unique(array_merge($standardRules, $additionalRules, $constraintRules));
     }
 
     public function isPrimaryKey()
@@ -110,17 +168,12 @@ class DataType
 
     public function isIncrements()
     {
-        return in_array($this->type, [
-            'bigIncrements',
-            'increments',
-            'mediumIncrements',
-            'smallIncrements',
-        ]);
+        return in_array($this->type, self::DATE_TYPES);
     }
 
     public function isBoolean()
     {
-        return $this->type === 'boolean';
+        return in_array($this->type, self::BOOL_TYPES);
     }
 
     public function isUuid()
@@ -130,15 +183,7 @@ class DataType
 
     public function isDate()
     {
-        return in_array($this->type, [
-            'date',
-            'dateTime',
-            'dateTimeTz',
-            'time',
-            'timeTz',
-            'timestamp',
-            'timestampTz',
-        ]);
+        return in_array($this->type, self::DATE_TYPES);
     }
 
     /**
@@ -146,14 +191,7 @@ class DataType
      */
     public function isString(): bool
     {
-        return in_array($this->type, [
-            'string',
-            'char',
-            'ipAddress',
-            'longText',
-            'macAddress',
-            'text'
-        ]);
+        return in_array($this->type, self::STRING_TYPES);
     }
 
     /**
@@ -161,29 +199,115 @@ class DataType
      */
     public function isNumeric(): bool
     {
-        return in_array($this->type, [
-            'bigIncrements',
-            'increments',
-            'mediumIncrements',
-            'smallIncrements',
-            'decimal',
-            'double',
-            'float',
-            'integer',
-            'mediumInteger',
-            'smallInteger',
-            'tinyInteger',
-            'unsignedBigInteger',
-            'unsignedInteger',
-            'unsignedMediumInteger',
-            'unsignedSmallInteger',
-            'unsignedTinyInteger'
-        ]);
+        return in_array($this->type, self::NUMERIC_TYPES);
     }
 
     public static function fromString($definition)
     {
-        $pieces = explode(':', $definition);
+        list($name, $type, $constraints) = self::parse($definition);
+
+        $rules = [];
+        $isPrimary = false;
+        $isNullable = false;
+        foreach ($constraints as $option) {
+            list($function, $arguments) = $constraints;
+            switch (true) {
+                case $option === 'primary':
+                    $isPrimary = true;
+                    break;
+                case $option === 'nullable':
+                    $isNullable = true;
+                    break;
+                case $function === 'default':
+                case in_array($function, ['in', 'not_in']):
+                case in_array($type, self::STRING_TYPES) && in_array($function, [
+                        'accepted',
+                        'active_url',
+                        'after',
+                        'after_or_equal',
+                        'alpha',
+                        'alpha_dash',
+                        'alpha_num',
+                        'before',
+                        'before_or_equal',
+                        'between',
+                        'different',
+                        'email',
+                        'filled',
+                        'ip',
+                        'ipv4',
+                        'ipv6',
+                        'json',
+                        'max',
+                        'min',
+                        'numeric',
+                        'regex',
+                        'required',
+                        'required_if',
+                        'required_unless',
+                        'required_with',
+                        'required_with_all',
+                        'required_without',
+                        'required_without_all',
+                        'same',
+                        'size',
+                        'timezone',
+                        'unique',
+                        'url'
+                    ]):
+                case in_array($type, self::NUMERIC_TYPES) && in_array(strtolower($function), [
+                        'min',
+                        'max',
+                        'between',
+                        'between',
+                        'different',
+                        'digits',
+                        'digits_between',
+                        'exists',
+                        'filled',
+                        'integer',
+                        'max',
+                        'min',
+                        'nullable',
+                        'numeric',
+                        'present',
+                        'regex',
+                        'required',
+                        'required_if',
+                        'required_unless',
+                        'required_with',
+                        'required_with_all',
+                        'required_without',
+                        'required_without_all',
+                        'same',
+                        'size',
+                        'unique',
+                    ]):
+                case in_array($type, self::DATE_TYPES) && in_array($function, [
+                        'before',
+                        'before_or_equal',
+                        'between',
+                    ]):
+                case in_array($type, self::BOOL_TYPES):
+                case in_array($function, ['required']):
+                    $rules[$function] = $arguments;
+                    break;
+                default:
+                    throw new \InvalidArgumentException("Unrecognized option \"$option\" for type \"$name\"");
+            }
+        }
+
+        return new DataType(
+            $name,
+            $type,
+            $isPrimary,
+            $isNullable,
+            collect($rules));
+    }
+
+    private static function parse($input)
+    {
+        $pieces = explode(':', $input);
 
         if (count($pieces) < 2) {
             throw new \InvalidArgumentException("Expected datatype for argument \"$pieces[0]\". The correct format is <name>:<datatype>");
@@ -192,21 +316,18 @@ class DataType
         list($name, $type) = $pieces;
         $options = array_slice($pieces, 2);
 
-        $isPrimary = false;
-        $isNullable = false;
+        $constraints = [];
         foreach ($options as $option) {
-            switch (true) {
-                case $option === 'primary':
-                    $isPrimary = true;
-                    break;
-                case $option === 'nullable':
-                    $isNullable = true;
-                    break;
-                default:
-                    throw new \InvalidArgumentException("Unrecognized option \"$option\" for type \"$name\"");
+            $argument = strpos($option, '[');
+            if ($argument === false) {
+                $argument = strlen($option);
             }
+
+            $argumentList = json_decode(substr($option, $argument));
+            $function = strtolower(substr($option, 0, $argument));
+            $constraints = [$function, $argumentList];
         }
 
-        return new DataType($name, $type, $isPrimary, $isNullable);
+        return [$name, $type, $constraints];
     }
 }

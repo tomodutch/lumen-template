@@ -1,8 +1,7 @@
 <?php
 
-$factory->define(\App\Group::class, function(\Faker\Generator $faker) {
+$factory->define(\App\Group::class, function (\Faker\Generator $faker) {
     return [
-                                                                                    'name' => $faker->word,
-                                                                                    'account_id' => $faker->uuid,
-                                        ];
+        'name' => $faker->word,
+    ];
 });

@@ -12,7 +12,6 @@ class Group extends Resource
         return [
                                                             'id' => $this->id,
                                                                 'name' => $this->name,
-                                                                'accountId' => $this->account_id,
                                         'createdAt' => $this->when($this->created_at, function() {
                 return $this->created_at->toISO8601String();
             }, null),
